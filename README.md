@@ -1,6 +1,6 @@
 # National Park Brochure Scraper
 
-A Python scraper that catalogs information about U.S. National Parks by combining data from the official National Park Service (NPS) API and historical brochure pages from npshistory.com. The scraped data is automatically uploaded to Google Sheets for easy viewing and analysis.
+A Python scraper that catalogs information about U.S. National Parks and uploads the data to Google Sheets. Designed to run in Google Colab with minimal setup.
 
 ## Features
 
@@ -15,157 +15,150 @@ A Python scraper that catalogs information about U.S. National Parks by combinin
   - Historical brochure page URL (from npshistory.com)
 - Respects rate limiting with 5-second delays between scrapes
 - Automatically uploads data to Google Sheets
-- Error handling and retry logic
-- Progress tracking during scraping
+- Single file - no configuration files needed
+- Runs entirely in Google Colab
 
-## Prerequisites
+## Quick Start (5 minutes)
 
-1. **Python 3.7+** installed on your system
-2. **NPS API Key** - Free API key from the National Park Service
-3. **Google Cloud Service Account** - For Google Sheets integration
+### 1. Get an NPS API Key (Free)
 
-## Setup Instructions
+1. Visit [NPS Developer Portal](https://www.nps.gov/subjects/developer/get-started.htm)
+2. Fill out the form with your name and email
+3. Check your email for the API key (arrives within an hour)
 
-### 1. Clone the Repository
+### 2. Open in Google Colab
 
-```bash
-git clone <repository-url>
-cd mgis13-national-park-scraper
+1. Download `national_park_scraper_colab.py`
+2. Go to [Google Colab](https://colab.research.google.com/)
+3. Upload the file: `File > Upload notebook` or drag-and-drop
+
+### 3. Configure
+
+Edit the configuration section at the top of the file:
+
+```python
+# CONFIGURATION - CUSTOMIZE THESE TWO VARIABLES
+NPS_API_KEY = "your_actual_api_key_here"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit"
 ```
 
-### 2. Install Dependencies
+### 4. Run
 
-```bash
-pip install -r requirements.txt
-```
+Click `Runtime > Run all` or press `Ctrl+F9`
 
-### 3. Get an NPS API Key
+The script will:
+- Install required packages automatically
+- Authenticate with your Google account (you'll need to grant permissions)
+- Scrape all National Parks from the NPS API
+- Find brochure pages on npshistory.com
+- Upload everything to your Google Sheet
 
-1. Visit the [NPS Developer Portal](https://www.nps.gov/subjects/developer/get-started.htm)
-2. Fill out the form to request an API key
-3. You'll receive your API key via email (usually within an hour)
-4. Set the environment variable:
+Expected runtime: 10-15 minutes
 
-```bash
-export NPS_API_KEY='your_api_key_here'
-```
+## What You Get
 
-### 4. Set Up Google Sheets Access
-
-#### Step 1: Create a Google Cloud Project
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a new project or select an existing one
-3. Enable the **Google Sheets API**:
-   - Go to "APIs & Services" > "Library"
-   - Search for "Google Sheets API"
-   - Click "Enable"
-
-#### Step 2: Create a Service Account
-
-1. Go to "APIs & Services" > "Credentials"
-2. Click "Create Credentials" > "Service Account"
-3. Fill in the service account details
-4. Click "Create and Continue"
-5. Skip the optional steps and click "Done"
-
-#### Step 3: Download Credentials
-
-1. Click on the service account you just created
-2. Go to the "Keys" tab
-3. Click "Add Key" > "Create New Key"
-4. Choose "JSON" format
-5. Download the JSON file and save it securely
-
-#### Step 4: Share Your Google Sheet
-
-1. Open your [Google Sheet](https://docs.google.com/spreadsheets/d/1y9hv2TgbaoAsUqZVpd6TlnPGHKQ7r5JS6Zo-IjSatMw/edit?usp=sharing)
-2. Click the "Share" button
-3. Add the service account email (found in the JSON file as `client_email`)
-4. Give it "Editor" permissions
-
-#### Step 5: Set Environment Variable
-
-```bash
-export GOOGLE_SHEETS_CREDENTIALS='/path/to/your/credentials.json'
-```
-
-## Usage
-
-### Step 1: Scrape National Park Data
-
-Run the scraper to fetch data from the NPS API and npshistory.com:
-
-```bash
-python national_park_scraper.py
-```
-
-This will:
-- Fetch all National Parks from the NPS API
-- Try to find brochure pages on npshistory.com for each park
-- Respect rate limiting with 5-second delays
-- Save the data to `parks_data.json`
-
-Expected runtime: ~10-15 minutes (depending on the number of parks)
-
-### Step 2: Upload to Google Sheets
-
-Upload the scraped data to your Google Sheet:
-
-```bash
-python upload_to_sheets.py
-```
-
-This will:
-- Read the `parks_data.json` file
-- Authenticate with Google Sheets API
-- Upload all data to the specified Google Sheet
-- Format the sheet with headers and auto-sized columns
-
-### View Results
-
-Open your Google Sheet to view the results:
-https://docs.google.com/spreadsheets/d/1y9hv2TgbaoAsUqZVpd6TlnPGHKQ7r5JS6Zo-IjSatMw/edit?usp=sharing
-
-## Output Format
-
-The Google Sheet will contain the following columns:
+A Google Sheet with the following columns:
 
 | Column | Description |
 |--------|-------------|
-| Park Name | Full official name of the park |
-| State | State(s) where the park is located |
-| Established Year | Year the park was established |
-| Size | Size in acres |
-| Description | Official park description |
-| NPS URL | Link to official NPS website |
-| Brochure Page URL | Link to historical brochures (if found) |
-| Has Brochures | Yes/No indicator |
-| Park Code | Official NPS park code |
+| **Park Name** | Full official name of the park |
+| **State** | State(s) where the park is located |
+| **Established Year** | Year the park was established (if available) |
+| **Size** | Size in acres |
+| **Description** | Official park description |
+| **NPS URL** | Link to official NPS website |
+| **Brochure Page URL** | Link to historical brochures (if found) |
+| **Has Brochures** | Yes/No indicator |
+| **Park Code** | Official NPS park code |
+
+## Google Sheets Setup
+
+### Option 1: Use the Provided Sheet (Easiest)
+
+The script is pre-configured to use:
+```
+https://docs.google.com/spreadsheets/d/1y9hv2TgbaoAsUqZVpd6TlnPGHKQ7r5JS6Zo-IjSatMw/edit?usp=sharing
+```
+
+Just make sure you have edit access to this sheet.
+
+### Option 2: Use Your Own Sheet
+
+1. Create a new Google Sheet
+2. Copy the sheet URL
+3. Update `SHEET_URL` in the configuration section
+4. Make sure you're logged into the Google account that owns the sheet
+
+When you run the script, you'll be prompted to authenticate with Google. This allows the script to access your Google Sheets.
+
+## How It Works
+
+The scraper uses a two-source approach:
+
+1. **Primary Data** - Official NPS API
+   - Authoritative information about all National Parks
+   - Includes names, locations, descriptions, sizes, URLs
+   - Reliable and structured
+
+2. **Supplementary Data** - npshistory.com
+   - Historical brochure pages for each park
+   - Not all parks have brochure pages (this is normal)
+   - Respects rate limits with 5-second delays
+
+## Output Example
+
+```
+[1/63] Yellowstone National Park (yell)
+  ✓ Found brochure page
+  State: ID, MT, WY
+  Established: 1872
+  Size: 2,219,791 acres
+
+[2/63] Yosemite National Park (yose)
+  ✓ Found brochure page
+  State: CA
+  Established: 1890
+  Size: 761,747 acres
+...
+```
 
 ## Troubleshooting
 
-### API Key Issues
+### "Please set your NPS_API_KEY"
 
-If you get API key errors:
-- Verify your API key is set: `echo $NPS_API_KEY`
-- Make sure there are no extra spaces or quotes
-- Try requesting a new API key if it's expired
+Make sure you:
+1. Replaced `YOUR_NPS_API_KEY_HERE` with your actual API key
+2. Kept the quotes around the API key
+3. Saved the file before running
 
-### Google Sheets Authentication Errors
+### "Authentication failed"
 
-If you get authentication errors:
-- Verify the credentials file path is correct
-- Make sure you've shared the sheet with the service account email
-- Check that the Google Sheets API is enabled in your project
+When prompted by Google Colab:
+1. Click the authentication link
+2. Choose your Google account
+3. Click "Allow" to grant permissions
+4. Wait for "Successfully authenticated" message
 
-### Rate Limiting
+### "Error opening spreadsheet"
 
-The scraper includes built-in 5-second delays between requests to respect the data sources. Do not reduce this delay as it may result in being blocked.
+Make sure:
+1. The SHEET_URL is correct
+2. You have edit access to the sheet
+3. You authenticated with the correct Google account
 
-### Missing Brochure Pages
+### "403 Forbidden" on brochure pages
 
-Not all parks have brochure pages on npshistory.com. This is expected - the scraper will mark these as "No" in the "Has Brochures" column.
+This is expected for some parks. The script will:
+- Continue processing other parks
+- Mark these as "No brochures found"
+- Still save all the NPS API data
+
+### "No parks found from NPS API"
+
+Check:
+1. Your API key is correct
+2. You have internet connection
+3. Try requesting a new API key
 
 ## Data Sources
 
@@ -175,19 +168,45 @@ Not all parks have brochure pages on npshistory.com. This is expected - the scra
 ## Rate Limiting & Ethics
 
 This scraper:
-- Uses the official NPS API (no scraping needed for primary data)
+- Uses the official NPS API (authorized access)
 - Respects rate limits with 5-second delays between requests
 - Uses appropriate User-Agent headers
 - Only accesses publicly available data
 - Follows best practices for ethical web scraping
 
+## Notes
+
+- Focuses on "National Parks" designation only (not National Monuments, Historic Sites, etc.)
+- Expected to find ~63 National Parks
+- Some data fields may be "Unknown" if not available from the NPS API
+- Brochure availability varies by park
+- The script automatically installs required packages in Colab
+
+## Requirements
+
+The script automatically installs:
+- `requests` - HTTP library
+- `beautifulsoup4` - HTML parsing
+- `gspread` - Google Sheets API
+
+Built-in to Colab:
+- `google.colab.auth` - Authentication
+- `google.auth` - Google credentials
+
 ## License
 
 This project is for educational purposes as part of MGIS13 coursework.
 
-## Notes
+## Support
 
-- The scraper focuses on "National Parks" designation only (not National Monuments, Historic Sites, etc.)
-- Brochure availability varies by park
-- Some data fields may be "Unknown" if not available from the NPS API
-- The NPS API is the authoritative source for park information
+If you encounter issues:
+1. Check the Troubleshooting section above
+2. Verify your API key is valid
+3. Make sure you have edit access to the Google Sheet
+4. Try creating a new Google Sheet and updating the URL
+
+## Credits
+
+Data provided by:
+- National Park Service (nps.gov)
+- NPS History (npshistory.com)
